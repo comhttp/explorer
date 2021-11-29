@@ -27,13 +27,13 @@ import (
 
 func (eq *ExplorerQueries) GetExplorer(coin string) *BlockchainStatus {
 	s := &BlockchainStatus{}
-	err := eq.status.Read(coin, "status", &s)
+	err := eq.info.Read(coin, "status", &s)
 	utl.ErrorLog(err)
 	return s
 }
 
 func (e *JORMexplorer) GetStatus(coin string) (*BlockchainStatus, error) {
-	err := e.EQ.status.Read(coin, "status", &e.Status)
+	err := e.EQ.info.Read(coin, "status", &e.Status)
 	utl.ErrorLog(err)
 	fmt.Println("eq.status", e.Status)
 	return e.Status, err
@@ -62,7 +62,7 @@ func (eq *ExplorerQueries) GetBlock(coin, id string) map[string]interface{} {
 
 func (eq *ExplorerQueries) GetBlocks(coin string, per, page int) (blocks []map[string]interface{}) {
 	s := &BlockchainStatus{}
-	err := eq.status.Read(coin, "status", &s)
+	err := eq.info.Read(coin, "status", &s)
 	utl.ErrorLog(err)
 	blockCount := s.Blocks
 	//app.log.Print("blockCount", blockCount)
@@ -128,35 +128,35 @@ func (eq *ExplorerQueries) GetAddr(coin, id string) map[string]interface{} {
 
 func (eq *ExplorerQueries) GetMemPool(coin string) []string {
 	mempool := []string{}
-	err := eq.status.Read(coin, "mempool", &mempool)
+	err := eq.info.Read(coin, "mempool", &mempool)
 	utl.ErrorLog(err)
 	return mempool
 }
 
 func (eq *ExplorerQueries) GetMiningInfo(coin string) map[string]interface{} {
 	mininginfo := make(map[string]interface{})
-	err := eq.status.Read(coin, "mining", &mininginfo)
+	err := eq.info.Read(coin, "mining", &mininginfo)
 	utl.ErrorLog(err)
 	return mininginfo
 }
 
 func (eq *ExplorerQueries) GetInfo(coin string) map[string]interface{} {
 	info := make(map[string]interface{})
-	err := eq.status.Read(coin, "info", &info)
+	err := eq.info.Read(coin, "info", &info)
 	utl.ErrorLog(err)
 	return info
 }
 
 func (eq *ExplorerQueries) GetNetworkInfo(coin string) map[string]interface{} {
 	network := make(map[string]interface{})
-	err := eq.status.Read(coin, "network", &network)
+	err := eq.info.Read(coin, "network", &network)
 	utl.ErrorLog(err)
 	return network
 }
 
 func (eq *ExplorerQueries) GetPeers(coin string) []interface{} {
 	peers := new([]interface{})
-	err := eq.status.Read(coin, "peers", &peers)
+	err := eq.info.Read(coin, "peers", &peers)
 	utl.ErrorLog(err)
 	return *peers
 }
