@@ -68,7 +68,7 @@ func NewJORMexplorer(path, command, coin string) *JORMexplorer {
 //	Status map[string]*BlockchainStatus `json:"status"`
 //}
 type ExplorerQueries struct {
-	status *jdb.JDB
+	info   *jdb.JDB
 	blocks *jdb.JDB
 	txs    *jdb.JDB
 	addrs  *jdb.JDB
@@ -96,9 +96,9 @@ func (e *JORMexplorer) Queries(coin, col string) {
 		// &BlockchainStatus{},
 		col: col,
 	}
-	status, err := jdb.NewJDB(e.jdbServers["status"])
+	info, err := jdb.NewJDB(e.jdbServers[coin])
 	utl.ErrorLog(err)
-	e.EQ.status = status
+	e.EQ.info = info
 	blocks, err := jdb.NewJDB(e.jdbServers[coin+"blocks"])
 	utl.ErrorLog(err)
 	e.EQ.blocks = blocks

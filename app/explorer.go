@@ -17,11 +17,11 @@ func (e *JORMexplorer) ExploreCoin() {
 		for _, bitnode := range e.BitNodes {
 			log.Print("Bitnode: ", bitnode)
 			bitnode.Jrc = utl.NewClient(e.config.RPC.Username, e.config.RPC.Password, bitnode.IP, bitnode.Port)
-			e.EQ.status.Write(e.Coin, "info", bitnode.APIGetInfo())
-			e.EQ.status.Write(e.Coin, "peers", bitnode.APIGetPeerInfo())
-			e.EQ.status.Write(e.Coin, "mempool", bitnode.APIGetRawMemPool())
-			e.EQ.status.Write(e.Coin, "mining", bitnode.APIGetMiningInfo())
-			e.EQ.status.Write(e.Coin, "network", bitnode.APIGetNetworkInfo())
+			e.EQ.info.Write(e.Coin, "info", bitnode.APIGetInfo())
+			e.EQ.info.Write(e.Coin, "peers", bitnode.APIGetPeerInfo())
+			e.EQ.info.Write(e.Coin, "mempool", bitnode.APIGetRawMemPool())
+			e.EQ.info.Write(e.Coin, "mining", bitnode.APIGetMiningInfo())
+			e.EQ.info.Write(e.Coin, "network", bitnode.APIGetNetworkInfo())
 
 			log.Print("Get Coin Blockchain:", e.Coin)
 			e.blockchain(&bitnode, e.Coin)
@@ -61,7 +61,7 @@ func (e *JORMexplorer) block(b *nodes.BitNode, coin string) {
 		bl := blockRaw.(map[string]interface{})
 		e.Status.Blocks = int(bl["height"].(float64))
 		log.Print("Write "+coin+" block: "+strconv.Itoa(e.Status.Blocks)+" - ", blockHash)
-		e.EQ.status.Write(e.Coin, "status", e.Status)
+		e.EQ.info.Write(e.Coin, "status", e.Status)
 	}
 }
 
@@ -81,7 +81,7 @@ func (e *JORMexplorer) blocks(b *nodes.BitNode, bc int, coin string) {
 			bl := blockRaw.(map[string]interface{})
 			e.Status.Blocks = int(bl["height"].(float64))
 			log.Info().Msg("Write " + coin + " block: " + strconv.Itoa(e.Status.Blocks) + " - " + blockHash)
-			e.EQ.status.Write(e.Coin, "status", e.Status)
+			e.EQ.info.Write(e.Coin, "status", e.Status)
 		} else {
 			break
 		}
