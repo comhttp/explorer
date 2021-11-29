@@ -31,7 +31,7 @@ func NewJORMexplorer(path, command, coin string) *JORMexplorer {
 	e.Coin = coin
 	// e.BitNodes = bitNodes
 	e.config.Path = path
-
+	e.command = command
 	c, _ := cfg.NewCFG(e.config.Path, nil)
 	// e.config = cfg.Config{}
 	err := c.Read("conf", "conf", &e.config)
