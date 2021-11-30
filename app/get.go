@@ -33,6 +33,8 @@ func (eq *ExplorerQueries) GetExplorer(coin string) *BlockchainStatus {
 }
 
 func (e *JORMexplorer) GetStatus(coin string) (*BlockchainStatus, error) {
+	fmt.Println("e.EQ.: ", e.EQ)
+
 	err := e.EQ.info.Read(coin, "status", &e.Status)
 	utl.ErrorLog(err)
 	fmt.Println("eq.status", e.Status)

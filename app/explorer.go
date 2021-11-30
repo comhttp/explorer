@@ -12,9 +12,14 @@ import (
 
 // GetExplorer updates the data from blockchain of a coin in the database
 func (e *JORMexplorer) ExploreCoin() {
+	fmt.Println("-------------111111111111111111111------------------------")
+
 	log.Print("Coin is BitNode:", e.Coin)
 	if e.BitNodes != nil {
 		for _, bitnode := range e.BitNodes {
+
+			fmt.Println("-------------bbbbbbbbbbbbbbbbbbbbbbb------------------------")
+
 			log.Print("Bitnode: ", bitnode)
 			bitnode.Jrc = utl.NewClient(e.config.RPC.Username, e.config.RPC.Password, bitnode.IP, bitnode.Port)
 			e.EQ.info.Write(e.Coin, "info", bitnode.APIGetInfo())
@@ -31,6 +36,9 @@ func (e *JORMexplorer) ExploreCoin() {
 
 // GetExplorer returns the full set of information about a block
 func (e *JORMexplorer) blockchain(bn *nodes.BitNode, coin string) {
+
+	fmt.Println("-------------1212------------------------")
+
 	if bn.Jrc != nil {
 		blockCount := bn.APIGetBlockCount()
 
