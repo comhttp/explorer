@@ -33,7 +33,7 @@ func (ej *ExplorerJDBs) GetExplorer(coin string) *BlockchainStatus {
 }
 
 func (e *JORMexplorer) GetStatus(coin string) (*BlockchainStatus, error) {
-	err := e.eJDBs.info.Read(coin, "status", &e.Status)
+	err := e.ExJDBs.info.Read(coin, "status", &e.Status)
 	utl.ErrorLog(err)
 	fmt.Println("ej.status", e.Status)
 	return e.Status, err

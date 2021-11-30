@@ -73,7 +73,7 @@ func NewJORMexplorer(path, command, coin string) *JORMexplorer {
 	for _, jdb := range jdbs {
 		jdbServers[jdb["slug"].(string)] = jdb["server"].(map[string]interface{})["tailscale"].(string) + ":" + fmt.Sprint(jdb["port"].(float64))
 	}
-	e.eJDBs = InitExplorerJDBs(jdbServers, e.command, e.Coin)
+	e.ExJDBs = InitExplorerJDBs(jdbServers, e.command, e.Coin)
 	e.WWW = &http.Server{
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

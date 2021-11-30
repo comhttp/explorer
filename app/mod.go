@@ -13,7 +13,7 @@ type JORMexplorer struct {
 	Coin     string
 	BitNodes nodes.BitNodes
 	Status   *BlockchainStatus
-	eJDBs    *ExplorerJDBs
+	ExJDBs   *ExplorerJDBs
 	config   cfg.Config
 	WWW      *http.Server
 	command  string
