@@ -68,13 +68,14 @@ github.com/cloudflare/cloudflare-go v0.27.0/go.mod h1:sPWL/lIC6biLEdyGZwBQ1rGQKF
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/cncf/udpa/go v0.0.0-20200629203442-efcf912fb354/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
 github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
+github.com/comhttp/jdb v0.0.0-20211121061312-09ef477ee587 h1:PaC/PvGtb4zPYVL+hsg+3Gsqzwuq16BudIwYKvLhA0M=
 github.com/comhttp/jdb v0.0.0-20211121061312-09ef477ee587/go.mod h1:t5YVBfldrTnxKy63GoHm1/tULzr3ViN/WXkQcGke8ac=
 github.com/comhttp/jdb v0.0.0-20211130044836-067d1570b882 h1:pn5tA0nhWokJFVTziwIZOqY1LqJ9sTDdLVxyZbNi/dc=
 github.com/comhttp/jdb v0.0.0-20211130044836-067d1570b882/go.mod h1:87xU11tItGlbAFHIPIFkUkRu2v0yqmXovwqR5+XLPik=
 github.com/comhttp/jdbc v0.0.0-20211121061740-8c5fa05cefa3 h1:zwQjWwCG1DrpbqPhieBR1ayf7fQjVU87TavEfCnWOr4=
 github.com/comhttp/jdbc v0.0.0-20211121061740-8c5fa05cefa3/go.mod h1:fjfdv27Is/VhqmkrDYyiXccGvCc/TxMTZPKuw+yUplw=
-github.com/comhttp/jorm v0.0.0-20211126001933-aa9cc881c9ca h1:Zxip/YUsaLdRkTsu+nOmudjteDOs1FBgjENCTs6+n4U=
-github.com/comhttp/jorm v0.0.0-20211126001933-aa9cc881c9ca/go.mod h1:JGAbadupm3cmcx0uj9baEJ/gnpX7jrhrGe6GYeocq30=
+github.com/comhttp/jorm v0.0.0-20211130082649-4e2a9bf8a9f5 h1:o6bz7Ho+rfzMhP42QTGn3GdcYPWT4tJa6WqgH9SmOks=
+github.com/comhttp/jorm v0.0.0-20211130082649-4e2a9bf8a9f5/go.mod h1:JGAbadupm3cmcx0uj9baEJ/gnpX7jrhrGe6GYeocq30=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
@@ -194,6 +195,7 @@ github.com/googleapis/gax-go/v2 v2.0.4/go.mod h1:0Wqv26UfaUD9n4G6kQubkQ+KchISgw+
 github.com/googleapis/gax-go/v2 v2.0.5/go.mod h1:DWXyrwAJ9X0FpwwEdw+IPEYBICEFu5mhpdKc/us6bOk=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/gorilla/handlers v1.5.1/go.mod h1:t8XrUpc4KVXb7HGyJ4/cEnwQiaxrX/hz1Zv/4g96P1Q=
+github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
 github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=

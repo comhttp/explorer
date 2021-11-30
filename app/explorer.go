@@ -49,55 +49,76 @@ func (e *JORMexplorer) blockchain(bn *nodes.BitNode, coin string) {
 
 func (e *JORMexplorer) block(b *nodes.BitNode, coin string) {
 	blockRaw := b.APIGetBlockByHeight(e.Status.Blocks - 1)
+	saveBlockRaw := make(map[string]interface{})
+	saveTxsRaw := make(map[string]interface{})
+	saveAddrsRaw := make(map[string]interface{})
 	if blockRaw != nil && blockRaw != "" {
 		blockHash := blockRaw.(map[string]interface{})["hash"].(string)
-		e.EQ.blocks.Write("block", strconv.Itoa(e.Status.Blocks), blockHash)
-		e.EQ.blocks.Write("block", blockHash, blockRaw)
+		// blockSaveErr := e.EQ.blocks.Write("block", strconv.Itoa(e.Status.Blocks), blockHash)
+		// blockSaveErr = e.EQ.blocks.Write("block", blockHash, blockRaw)
+
+		saveBlockRaw["block_"+strconv.Itoa(e.Status.Blocks)] = blockHash
+		saveBlockRaw["block_"+blockHash] = blockRaw
+
+		err := e.EQ.blocks.WriteAll(saveBlockRaw)
+		err = e.EQ.txs.WriteAll(saveTxsRaw)
+		err = e.EQ.addrs.WriteAll(saveAddrsRaw)
+
 		block := (blockRaw).(map[string]interface{})
 		if e.command != "onlyblocks" {
-			go e.txs(b, (block["tx"]).([]interface{}), coin)
+			e.txs(b, (block["tx"]).([]interface{}), coin, saveTxsRaw, saveAddrsRaw)
+		}
+		if err == nil {
+			bl := blockRaw.(map[string]interface{})
+			e.Status.Blocks = int(bl["height"].(float64))
+			log.Print("Write "+coin+" block: "+strconv.Itoa(e.Status.Blocks)+" - ", blockHash)
+			e.EQ.info.Write(e.Coin, "status", e.Status)
 		}
 
-		bl := blockRaw.(map[string]interface{})
-		e.Status.Blocks = int(bl["height"].(float64))
-		log.Print("Write "+coin+" block: "+strconv.Itoa(e.Status.Blocks)+" - ", blockHash)
-		e.EQ.info.Write(e.Coin, "status", e.Status)
 	}
 }
 
 func (e *JORMexplorer) blocks(b *nodes.BitNode, bc int, coin string) {
 	for {
 		blockRaw := b.APIGetBlockByHeight(e.Status.Blocks)
+		saveBlockRaw := make(map[string]interface{})
+		saveTxsRaw := make(map[string]interface{})
+		saveAddrsRaw := make(map[string]interface{})
 		if blockRaw != nil && blockRaw != "" {
 			blockHash := blockRaw.(map[string]interface{})["hash"].(string)
-			e.EQ.blocks.Write("block", strconv.Itoa(e.Status.Blocks), blockHash)
-			e.EQ.blocks.Write("block", blockHash, blockRaw)
 			block := (blockRaw).(map[string]interface{})
+			saveBlockRaw["block_"+strconv.Itoa(e.Status.Blocks)] = blockHash
+			saveBlockRaw["block_"+blockHash] = blockRaw
+			err := e.EQ.blocks.WriteAll(saveBlockRaw)
 			if e.Status.Blocks != 0 {
 				if e.command != "onlyblocks" {
-					go e.txs(b, (block["tx"]).([]interface{}), coin)
+					e.txs(b, (block["tx"]).([]interface{}), coin, saveTxsRaw, saveAddrsRaw)
+					err = e.EQ.txs.WriteAll(saveTxsRaw)
+					err = e.EQ.addrs.WriteAll(saveAddrsRaw)
 				}
 			}
-			bl := blockRaw.(map[string]interface{})
-			e.Status.Blocks = int(bl["height"].(float64))
-			log.Info().Msg("Write " + coin + " block: " + strconv.Itoa(e.Status.Blocks) + " - " + blockHash)
-			e.EQ.info.Write(e.Coin, "status", e.Status)
-		} else {
-			break
+			if err == nil {
+				bl := blockRaw.(map[string]interface{})
+				e.Status.Blocks = int(bl["height"].(float64))
+				log.Info().Msg("Write " + coin + " block: " + strconv.Itoa(e.Status.Blocks) + " - " + blockHash)
+				e.EQ.info.Write(e.Coin, "status", e.Status)
+			} else {
+				break
+			}
+			if bc != 0 {
+				e.Status.Blocks++
+			}
+			log.Print("StatusBlocks   "+coin+": ", e.Status.Blocks)
+			time.Sleep(9 * time.Millisecond)
 		}
-		if bc != 0 {
-			e.Status.Blocks++
-		}
-		log.Print("StatusBlocks   "+coin+": ", e.Status.Blocks)
-		time.Sleep(9 * time.Millisecond)
 	}
 }
 
-func (e *JORMexplorer) tx(b *nodes.BitNode, coin, txid string) {
-	txRaw := b.APIGetTx(txid)
+func (e *JORMexplorer) tx(b *nodes.BitNode, coin, txid string) (txRaw interface{}, saveAddrsRaw map[string]interface{}) {
+	txRaw = b.APIGetTx(txid)
 	e.Status.Txs++
-	e.EQ.txs.Write("tx", txid, txRaw)
-	log.Info().Msg("Write " + coin + " transaction: " + txid)
+	// e.EQ.txs.Write("tx", txid, txRaw)
+	// log.Info().Msg("Write " + coin + " transaction: " + txid)
 	if txRaw != nil {
 		tx := (txRaw).(map[string]interface{})
 		// if tx["vin"] != nil {
@@ -131,16 +152,17 @@ func (e *JORMexplorer) tx(b *nodes.BitNode, coin, txid string) {
 				if nRaw.(map[string]interface{})["scriptPubKey"] != nil {
 					scriptPubKey := nRaw.(map[string]interface{})["scriptPubKey"].(map[string]interface{})
 					if scriptPubKey["addresses"] != nil {
-						go e.addrs(b, (scriptPubKey["addresses"]).([]interface{}), nRaw.(map[string]interface{}), txid, coin)
+						// saveAddrsRaw = e.addrs(b, (scriptPubKey["addresses"]).([]interface{}), nRaw.(map[string]interface{}), txid, coin)
 					}
 				}
 			}
 		}
 	}
-	return
+
+	return txRaw, saveAddrsRaw
 }
 
-func (e *JORMexplorer) addr(coin, address, txid string, value float64) {
+func (e *JORMexplorer) addr(coin, address, txid string, value float64) map[string]interface{} {
 	e.Status.Addresses++
 	addr := make(map[string]interface{})
 	err := e.EQ.addrs.Read("addr", address, &addr)
@@ -157,18 +179,29 @@ func (e *JORMexplorer) addr(coin, address, txid string, value float64) {
 		addr["txs"] = txs
 	}
 	addr["value"] = addr["value"].(float64) + value
-	e.EQ.addrs.Write("addr", address, addr)
-	log.Info().Msg("Write " + coin + " address: " + address)
-	return
+	// e.EQ.addrs.Write("addr", address, addr)
+	// log.Info().Msg("Write " + coin + " address: " + address)
+	return addr
 }
 
-func (e *JORMexplorer) txs(b *nodes.BitNode, tx []interface{}, coin string) {
-	for _, t := range tx {
-		e.tx(b, coin, t.(string))
+func (e *JORMexplorer) txs(b *nodes.BitNode, txs []interface{}, coin string, saveTxsRaw, saveAddrsRaw map[string]interface{}) {
+	// saveTxsRaw = make(map[string]interface{})
+	// saveAddrsRaw = make(map[string]interface{})
+	for _, t := range txs {
+		txRaw, saveTxAddrsRaw := e.tx(b, coin, t.(string))
+		for saveKey, saveData := range saveTxAddrsRaw {
+			saveAddrsRaw[saveKey] = saveData
+		}
+		saveTxsRaw["tx_"+t.(string)] = txRaw
 	}
+	return
 }
-func (e *JORMexplorer) addrs(b *nodes.BitNode, addresses []interface{}, nRaw map[string]interface{}, txid, coin string) {
+func (e *JORMexplorer) addrs(b *nodes.BitNode, addresses []interface{}, nRaw map[string]interface{}, txid, coin string) map[string]interface{} {
+	saveAddrsRaw := make(map[string]interface{})
 	for _, address := range addresses {
-		e.addr(coin, address.(string), txid, nRaw["value"].(float64))
+		saveAddrsRaw["addr_"+address.(string)] = e.addr(coin, address.(string), txid, nRaw["value"].(float64))
 	}
+	fmt.Println(":sa1111111111111111111veAddrsRawsaveAddrsRawsaveAddrsRawsaveAddrsRawsaveAddrsRaw: ", saveAddrsRaw)
+
+	return saveAddrsRaw
 }
