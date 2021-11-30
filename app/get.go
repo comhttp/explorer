@@ -25,19 +25,17 @@ import (
 //return
 //}
 
-func (eq *ExplorerQueries) GetExplorer(coin string) *BlockchainStatus {
+func (ej *ExplorerJDBs) GetExplorer(coin string) *BlockchainStatus {
 	s := &BlockchainStatus{}
-	err := eq.info.Read(coin, "status", &s)
+	err := ej.info.Read(coin, "status", &s)
 	utl.ErrorLog(err)
 	return s
 }
 
 func (e *JORMexplorer) GetStatus(coin string) (*BlockchainStatus, error) {
-	fmt.Println("e.EQ.: ", e.EQ)
-
-	err := e.EQ.info.Read(coin, "status", &e.Status)
+	err := e.eJDBs.info.Read(coin, "status", &e.Status)
 	utl.ErrorLog(err)
-	fmt.Println("eq.status", e.Status)
+	fmt.Println("ej.status", e.Status)
 	return e.Status, err
 }
 
@@ -47,7 +45,7 @@ func (e *JORMexplorer) GetLastBlock(coin string) int {
 	return status.Blocks
 }
 
-func (eq *ExplorerQueries) GetBlock(coin, id string) map[string]interface{} {
+func (ej *ExplorerJDBs) GetBlock(coin, id string) map[string]interface{} {
 	blockHash := ""
 	block := make(map[string]interface{})
 	_, err := strconv.Atoi(id)
@@ -55,23 +53,23 @@ func (eq *ExplorerQueries) GetBlock(coin, id string) map[string]interface{} {
 		blockHash = id
 	} else {
 		blockHash = ""
-		err = eq.blocks.Read("block", id, &blockHash)
+		err = ej.blocks.Read("block", id, &blockHash)
 	}
-	err = eq.blocks.Read("block", blockHash, &block)
+	err = ej.blocks.Read("block", blockHash, &block)
 	utl.ErrorLog(err)
 	return block
 }
 
-func (eq *ExplorerQueries) GetBlocks(coin string, per, page int) (blocks []map[string]interface{}) {
+func (ej *ExplorerJDBs) GetBlocks(coin string, per, page int) (blocks []map[string]interface{}) {
 	s := &BlockchainStatus{}
-	err := eq.info.Read(coin, "status", &s)
+	err := ej.info.Read(coin, "status", &s)
 	utl.ErrorLog(err)
 	blockCount := s.Blocks
 	//app.log.Print("blockCount", blockCount)
 	startBlock := blockCount - per*page
 	minusBlockStart := int(startBlock + per)
 	for ibh := minusBlockStart; ibh >= startBlock; {
-		blocks = append(blocks, eq.GetBlockShort(coin, strconv.Itoa(ibh)))
+		blocks = append(blocks, ej.GetBlockShort(coin, strconv.Itoa(ibh)))
 		ibh--
 	}
 	sort.SliceStable(blocks, func(i, j int) bool {
@@ -79,8 +77,8 @@ func (eq *ExplorerQueries) GetBlocks(coin string, per, page int) (blocks []map[s
 	})
 	return blocks
 }
-func (eq *ExplorerQueries) GetBlockShort(coin, blockhash string) map[string]interface{} {
-	b := eq.GetBlock(coin, blockhash)
+func (ej *ExplorerJDBs) GetBlockShort(coin, blockhash string) map[string]interface{} {
+	b := ej.GetBlock(coin, blockhash)
 	block := make(map[string]interface{})
 	if b["bits"] != nil {
 		block["bits"] = b["bits"].(string)
@@ -115,50 +113,50 @@ func (eq *ExplorerQueries) GetBlockShort(coin, blockhash string) map[string]inte
 	return block
 }
 
-func (eq *ExplorerQueries) GetTx(coin, id string) map[string]interface{} {
+func (ej *ExplorerJDBs) GetTx(coin, id string) map[string]interface{} {
 	tx := make(map[string]interface{})
-	err := eq.txs.Read("tx", id, &tx)
+	err := ej.txs.Read("tx", id, &tx)
 	utl.ErrorLog(err)
 	return tx
 }
-func (eq *ExplorerQueries) GetAddr(coin, id string) map[string]interface{} {
+func (ej *ExplorerJDBs) GetAddr(coin, id string) map[string]interface{} {
 	addr := make(map[string]interface{})
-	err := eq.addrs.Read("addr", id, &addr)
+	err := ej.addrs.Read("addr", id, &addr)
 	utl.ErrorLog(err)
 	return addr
 }
 
-func (eq *ExplorerQueries) GetMemPool(coin string) []string {
+func (ej *ExplorerJDBs) GetMemPool(coin string) []string {
 	mempool := []string{}
-	err := eq.info.Read(coin, "mempool", &mempool)
+	err := ej.info.Read(coin, "mempool", &mempool)
 	utl.ErrorLog(err)
 	return mempool
 }
 
-func (eq *ExplorerQueries) GetMiningInfo(coin string) map[string]interface{} {
+func (ej *ExplorerJDBs) GetMiningInfo(coin string) map[string]interface{} {
 	mininginfo := make(map[string]interface{})
-	err := eq.info.Read(coin, "mining", &mininginfo)
+	err := ej.info.Read(coin, "mining", &mininginfo)
 	utl.ErrorLog(err)
 	return mininginfo
 }
 
-func (eq *ExplorerQueries) GetInfo(coin string) map[string]interface{} {
+func (ej *ExplorerJDBs) GetInfo(coin string) map[string]interface{} {
 	info := make(map[string]interface{})
-	err := eq.info.Read(coin, "info", &info)
+	err := ej.info.Read(coin, "info", &info)
 	utl.ErrorLog(err)
 	return info
 }
 
-func (eq *ExplorerQueries) GetNetworkInfo(coin string) map[string]interface{} {
+func (ej *ExplorerJDBs) GetNetworkInfo(coin string) map[string]interface{} {
 	network := make(map[string]interface{})
-	err := eq.info.Read(coin, "network", &network)
+	err := ej.info.Read(coin, "network", &network)
 	utl.ErrorLog(err)
 	return network
 }
 
-func (eq *ExplorerQueries) GetPeers(coin string) []interface{} {
+func (ej *ExplorerJDBs) GetPeers(coin string) []interface{} {
 	peers := new([]interface{})
-	err := eq.info.Read(coin, "peers", &peers)
+	err := ej.info.Read(coin, "peers", &peers)
 	utl.ErrorLog(err)
 	return *peers
 }

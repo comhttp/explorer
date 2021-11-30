@@ -22,11 +22,11 @@ func (e *JORMexplorer) ExploreCoin() {
 
 			log.Print("Bitnode: ", bitnode)
 			bitnode.Jrc = utl.NewClient(e.config.RPC.Username, e.config.RPC.Password, bitnode.IP, bitnode.Port)
-			e.EQ.info.Write(e.Coin, "info", bitnode.APIGetInfo())
-			e.EQ.info.Write(e.Coin, "peers", bitnode.APIGetPeerInfo())
-			e.EQ.info.Write(e.Coin, "mempool", bitnode.APIGetRawMemPool())
-			e.EQ.info.Write(e.Coin, "mining", bitnode.APIGetMiningInfo())
-			e.EQ.info.Write(e.Coin, "network", bitnode.APIGetNetworkInfo())
+			e.eJDBs.info.Write(e.Coin, "info", bitnode.APIGetInfo())
+			e.eJDBs.info.Write(e.Coin, "peers", bitnode.APIGetPeerInfo())
+			e.eJDBs.info.Write(e.Coin, "mempool", bitnode.APIGetRawMemPool())
+			e.eJDBs.info.Write(e.Coin, "mining", bitnode.APIGetMiningInfo())
+			e.eJDBs.info.Write(e.Coin, "network", bitnode.APIGetNetworkInfo())
 
 			log.Print("Get Coin Blockchain:", e.Coin)
 			e.blockchain(&bitnode, e.Coin)
@@ -68,9 +68,9 @@ func (e *JORMexplorer) block(b *nodes.BitNode, coin string) {
 		saveBlockRaw["block_"+strconv.Itoa(e.Status.Blocks)] = blockHash
 		saveBlockRaw["block_"+blockHash] = blockRaw
 
-		err := e.EQ.blocks.WriteAll(saveBlockRaw)
-		err = e.EQ.txs.WriteAll(saveTxsRaw)
-		err = e.EQ.addrs.WriteAll(saveAddrsRaw)
+		err := e.eJDBs.blocks.WriteAll(saveBlockRaw)
+		err = e.eJDBs.txs.WriteAll(saveTxsRaw)
+		err = e.eJDBs.addrs.WriteAll(saveAddrsRaw)
 
 		block := (blockRaw).(map[string]interface{})
 		if e.command != "onlyblocks" {
@@ -80,7 +80,7 @@ func (e *JORMexplorer) block(b *nodes.BitNode, coin string) {
 			bl := blockRaw.(map[string]interface{})
 			e.Status.Blocks = int(bl["height"].(float64))
 			log.Print("Write "+coin+" block: "+strconv.Itoa(e.Status.Blocks)+" - ", blockHash)
-			e.EQ.info.Write(e.Coin, "status", e.Status)
+			e.eJDBs.info.Write(e.Coin, "status", e.Status)
 		}
 
 	}
@@ -97,19 +97,19 @@ func (e *JORMexplorer) blocks(b *nodes.BitNode, bc int, coin string) {
 			block := (blockRaw).(map[string]interface{})
 			saveBlockRaw["block_"+strconv.Itoa(e.Status.Blocks)] = blockHash
 			saveBlockRaw["block_"+blockHash] = blockRaw
-			err := e.EQ.blocks.WriteAll(saveBlockRaw)
+			err := e.eJDBs.blocks.WriteAll(saveBlockRaw)
 			if e.Status.Blocks != 0 {
 				if e.command != "onlyblocks" {
 					e.txs(b, (block["tx"]).([]interface{}), coin, saveTxsRaw, saveAddrsRaw)
-					err = e.EQ.txs.WriteAll(saveTxsRaw)
-					err = e.EQ.addrs.WriteAll(saveAddrsRaw)
+					err = e.eJDBs.txs.WriteAll(saveTxsRaw)
+					err = e.eJDBs.addrs.WriteAll(saveAddrsRaw)
 				}
 			}
 			if err == nil {
 				bl := blockRaw.(map[string]interface{})
 				e.Status.Blocks = int(bl["height"].(float64))
 				log.Info().Msg("Write " + coin + " block: " + strconv.Itoa(e.Status.Blocks) + " - " + blockHash)
-				e.EQ.info.Write(e.Coin, "status", e.Status)
+				e.eJDBs.info.Write(e.Coin, "status", e.Status)
 			} else {
 				break
 			}
@@ -173,7 +173,7 @@ func (e *JORMexplorer) tx(b *nodes.BitNode, coin, txid string) (txRaw interface{
 func (e *JORMexplorer) addr(coin, address, txid string, value float64) map[string]interface{} {
 	e.Status.Addresses++
 	addr := make(map[string]interface{})
-	err := e.EQ.addrs.Read("addr", address, &addr)
+	err := e.eJDBs.addrs.Read("addr", address, &addr)
 	utl.ErrorLog(err)
 	addr["address"] = address
 	if addr["value"] == nil {
