@@ -53,7 +53,7 @@ func NewJORMexplorer(path, command, coin string) *JORMexplorer {
 
 	err = c.Read("nodes", coin, &e.BitNodes)
 	utl.ErrorLog(err)
-	e.EQ = e.Queries()
+	e.EQ = Queries(e.jdbServers, e.command, e.Coin)
 	e.WWW = &http.Server{
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
@@ -71,23 +71,23 @@ func NewJORMexplorer(path, command, coin string) *JORMexplorer {
 	}
 	return e
 }
-func (e *JORMexplorer) Queries() *ExplorerQueries {
+func Queries(jdbServers map[string]string, command, coin string) *ExplorerQueries {
 	eq := &ExplorerQueries{
 		// &BlockchainStatus{},
 		// col: col,
 	}
 
-	info, err := jdb.NewJDB(e.jdbServers[e.Coin])
+	info, err := jdb.NewJDB(jdbServers[coin])
 	utl.ErrorLog(err)
 	eq.info = info
-	blocks, err := jdb.NewJDB(e.jdbServers[e.Coin+"blocks"])
+	blocks, err := jdb.NewJDB(jdbServers[coin+"blocks"])
 	utl.ErrorLog(err)
 	eq.blocks = blocks
-	if e.command != "onlyblocks" {
-		txs, err := jdb.NewJDB(e.jdbServers[e.Coin+"txs"])
+	if command != "onlyblocks" {
+		txs, err := jdb.NewJDB(jdbServers[coin+"txs"])
 		utl.ErrorLog(err)
 		eq.txs = txs
-		addrs, err := jdb.NewJDB(e.jdbServers[e.Coin+"addrs"])
+		addrs, err := jdb.NewJDB(jdbServers[coin+"addrs"])
 		utl.ErrorLog(err)
 		eq.addrs = addrs
 	}
