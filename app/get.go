@@ -32,15 +32,15 @@ func (ej *ExplorerJDBs) GetExplorer(coin string) *BlockchainStatus {
 	return s
 }
 
-func (e *JORMexplorer) GetStatus(coin string) (*BlockchainStatus, error) {
-	err := e.ExJDBs.info.Read(coin, "status", &e.Status)
+func (ej *ExplorerJDBs) GetStatus(status *BlockchainStatus, coin string) (*BlockchainStatus, error) {
+	err := ej.info.Read(coin, "status", &status)
 	utl.ErrorLog(err)
-	fmt.Println("ej.status", e.Status)
-	return e.Status, err
+	fmt.Println("ej.status", status)
+	return status, err
 }
 
-func (e *JORMexplorer) GetLastBlock(coin string) int {
-	status, err := e.GetStatus(coin)
+func (ej *ExplorerJDBs) GetLastBlock(status *BlockchainStatus, coin string) int {
+	status, err := ej.GetStatus(status, coin)
 	utl.ErrorLog(err)
 	return status.Blocks
 }
