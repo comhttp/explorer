@@ -79,7 +79,7 @@ func NewJORMexplorer(path, command, coin string) *JORMexplorer {
 		ReadTimeout:  15 * time.Second,
 	}
 	e.WWW.Addr = ":" + e.config.Port[coin]
-	status, err := e.ExJDBs.GetStatus(e.Status, coin)
+	status, err := e.ExJDBs.GetStatus(coin)
 	utl.ErrorLog(err)
 	e.Status = status
 	if e.Status == nil {
